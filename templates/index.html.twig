@@ -8,13 +8,21 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
+        <div class="container bg-secondary">    
+           
+           {{ include("_nav.html.twig") }}
+            <h1 class="text-success">{{controller_name}}</h1>
+
+
+
         {% block body %}
-        
-        {{controller_name}}
-        
-        
+            {{include("_body.html.twig")}}
         {% endblock %}
+
+        <div style="height:1000px;width:1000px;"></div>
+        </div>
         <script src='{{ asset('build/js/app.js') }}'></script>
+        <script src='{{ asset('build/js/global.js') }}'></script>
         {% block javascripts %}{% endblock %}
     </body>
 </html>

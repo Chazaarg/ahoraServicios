@@ -8,11 +8,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class OferenteController extends Controller
 {
     /**
-     * @Route("/zonas/servicios/oferente", name="oferente")
+     * @Route("/servicio/zonas/oficios/oferente", name="oferente")
      */
     public function index()
     {
-        return $this->render('/zonas/servicios/oferente/index.html.twig', [
+        return $this->render('/servicio/zonas/oficios/oferente/index.html.twig', [
             'controller_name' => 'OferenteController',
         ]);
     }
