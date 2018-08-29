@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Servicio;
-use App\Repository\ServicioRepository;
+use App\Entity\Zona;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,8 +19,14 @@ class ServicioController extends Controller
      */
     public function index(Servicio $servicio): Response
     {
+        $zonas = $this->getDoctrine()
+        ->getRepository(Zona::class)
+        ->findAll();
+
         return $this->render('servicio/index.html.twig', [
             'controller_name' => $servicio->getNombre(),
+            'zonas' => $zonas,
+
             ]);
     }
 }

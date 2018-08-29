@@ -1,0 +1,89 @@
+
+    <select id="onchange" class="custom-select col-5" style="-webkit-appearance: none">
+    <option value="">Zona...</option>
+    {% for zona in zonas %}
+    <option value="{{zona.idZona}}">{{zona.nombre}}</option>
+    {% endfor %}
+    </select>
+    <div class="d-none" id="map" style="height:500px"></div>
+
+    
+    
+    {# Toma las zonas de la base de datos #}
+
+    <input type="hidden" id="zonas" value="{&quot;zona&quot;:[{% for zona in zonas %}{&quot;id&quot;:{{zona.idZona}},&quot;nombre&quot;:&quot;{{zona.nombre}}&quot;,&quot;lat&quot;:{{zona.lat}},&quot;lng&quot;:{{zona.lng}}},{% endfor %}"></input>
+
+
+
+
+    <div id="demo"></div>
+    
+    <script>
+  //Transforma los valores de las zonas en JSON
+
+    var zonas = document.getElementById("zonas").value;
+    zonas = zonas.substring(0,zonas.length - 1);
+    zonas = zonas + "]}";
+    zonas = JSON.parse(zonas);
+
+
+    var showmap = 
+
+    
+    function showMap(zonaVal){
+
+      var element = document.getElementById("map");
+      element.classList.remove("d-none");
+      
+
+      for( i = 0; i < zonas.zona.length; i++){
+        if( zonas.zona[i].id == zonaVal){
+          console.log(zonas.zona[i].nombre);
+        }
+      }
+
+    } 
+    
+      var map;
+      function initMap() {
+
+        //Cuando se elige una zona...
+        document.getElementById("onchange").onchange = function(){
+          
+          //Muestra el mapa
+          var element = document.getElementById("map");
+          element.classList.remove("d-none");
+
+          //Recoge el valor del objeto según el id de la zona elegida.
+
+          zonaVal = this.value;
+
+          for( i = 0; i < zonas.zona.length; i++){
+
+            if( zonas.zona[i].id == zonaVal){
+
+              map = new google.maps.Map(document.getElementById('map'), {
+              center: {lat: zonas.zona[i].lat, lng: zonas.zona[i].lng},
+              zoom: 12
+              });
+
+            }
+
+          }
+
+
+
+
+
+        };
+
+
+        
+      }
+    </script>
+
+
+
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0KtoDjLlnWQY90J5d6VeBFXSpq9cHV_Y&callback=initMap">
+    </script>
