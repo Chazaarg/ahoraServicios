@@ -1,62 +1,116 @@
 
-    <select id="onchange" class="custom-select col-5" style="-webkit-appearance: none">
-    <option value="">Zona...</option>
-    {% for zona in zonas %}
-    <option value="{{zona.idZona}}">{{zona.nombre}}</option>
-    {% endfor %}
-    </select>
-    <div class="d-none" id="map" style="height:500px"></div>
+
+<form id="location-form">
+  <div class="row d-flex justify-content-around">
+    <div class="col-5">
+      <select id="onchange" class="custom-select" style="-webkit-appearance: none">
+        <option value="0">Zona...</option>
+        {% for zona in zonas %}
+        <option value="{{zona.idZona}}">{{zona.nombre}}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="col-5">
+    
+      <input type="text" id="address-input" class="form-control form-control-lg">
+
+    </div>
+
+    <div class="col-2">
+
+    <input type="submit" class="btn btn-primary btn-lock"></input>
+
+    </div>
+
+  </div>
+</form>
+
 
     
+<div class="d-none" id="map" style="height:500px"></div>
+
     
-    {# Toma las zonas de la base de datos #}
+{# Toma las zonas de la base de datos #}
 
-    <input type="hidden" id="zonas" value="{&quot;zona&quot;:[{% for zona in zonas %}{&quot;id&quot;:{{zona.idZona}},&quot;nombre&quot;:&quot;{{zona.nombre}}&quot;,&quot;lat&quot;:{{zona.lat}},&quot;lng&quot;:{{zona.lng}}},{% endfor %}"></input>
+<input type="hidden" id="zonas" value="{&quot;zona&quot;:[{% for zona in zonas %}{&quot;id&quot;:{{zona.idZona}},&quot;nombre&quot;:&quot;{{zona.nombre}}&quot;,&quot;lat&quot;:{{zona.lat}},&quot;lng&quot;:{{zona.lng}}},{% endfor %}"></input>
 
-
-
-
-    <div id="demo"></div>
     
-    <script>
+<script>
+
   //Transforma los valores de las zonas en JSON
 
-    var zonas = document.getElementById("zonas").value;
-    zonas = zonas.substring(0,zonas.length - 1);
-    zonas = zonas + "]}";
-    zonas = JSON.parse(zonas);
+  var zonas = document.getElementById("zonas").value;
+  zonas = zonas.substring(0,zonas.length - 1);
+  zonas = zonas + "]}";
+  zonas = JSON.parse(zonas);
+
+    var map;
 
 
-    var showmap = 
+    function initMap() {
 
-    
-    function showMap(zonaVal){
+      //Cuando se cambia la zona, se almacena el nombre en una promesa
 
-      var element = document.getElementById("map");
-      element.classList.remove("d-none");
+      var promise = new Promise(function(resolve){
+
+        document.getElementById("onchange").onchange = function(){
+          zonaVal = this.value;
+
+          for( i = 0; i < zonas.zona.length; i++){
+
+              if( zonas.zona[i].id == zonaVal){
+              
+                resolve(zonas.zona[i].nombre);
+                
+              }
+          }
+        };
       
 
-      for( i = 0; i < zonas.zona.length; i++){
-        if( zonas.zona[i].id == zonaVal){
-          console.log(zonas.zona[i].nombre);
-        }
-      }
+        /*if (localStorage.getItem('zonaIngresada')) {
 
-    } 
-    
-      var map;
-      function initMap() {
+          var zonaVal = window.localStorage.getItem('zonaIngresada');
+          for( i = 0; i < zonas.zona.length; i++){
 
-        //Cuando se elige una zona...
-        document.getElementById("onchange").onchange = function(){
+              if( zonas.zona[i].id == zonaVal){
+
+                resolve(zonas.zona[i].nombre);
+
+              }
+
+            }
+        }*/
+
+         
+        
+
+        
+
+        
+        
+
+
+        
+      });
+
+      
+      
+      
+/*
+      //Cuando se elige una zona
+      
+      document.getElementById("onchange").onchange = function(){
+
+        //Muestra el mapa
+        var element = document.getElementById("map");
+        element.classList.remove("d-none");
+
+        //Recoge el ID de la zona elegida
+        var zonaVal = this.value;
+
+        //Recoge el valor del objeto según el id de la zona elegida.
           
-          //Muestra el mapa
-          var element = document.getElementById("map");
-          element.classList.remove("d-none");
-
-          //Recoge el valor del objeto según el id de la zona elegida.
-
-          zonaVal = this.value;
 
           for( i = 0; i < zonas.zona.length; i++){
 
@@ -71,19 +125,109 @@
 
           }
 
-
-
-
-
-        };
-
+      }
+*/
 
         
-      }
-    </script>
+        //Cuando se presiona el SUBMIT
+        
+        var getLocation = (e) =>{
+
+          e.preventDefault();
+
+
+          //Muestra el mapa
+          var element = document.getElementById("map");
+          element.classList.remove("d-none");
 
 
 
-    <script async defer
+            //Agarra el valor del input 
+            let addressVal = document.getElementById('address-input').value;
+            
+            let xhr = new XMLHttpRequest();
+            xhr.addEventListener('load', function ()
+              {
+                  if (this.readyState === 4 ) {
+                      if (this.status === 200) {
+
+                        //Recoge el array del address
+
+                          geocodeRequest = JSON.parse(this.response);
+                          geocodeRequestLat = geocodeRequest.results[0].geometry.location.lat;
+                          geocodeRequestLng = geocodeRequest.results[0].geometry.location.lng;
+
+                          map = new google.maps.Map(document.getElementById('map'), {
+                          center: {
+                            lat:geocodeRequestLat,
+                            lng: geocodeRequestLng
+                          },
+                          zoom: 17
+                          });
+
+                          marker = new google.maps.Marker({
+                            position:{lat:geocodeRequestLat,lng:geocodeRequestLng},
+                            map:map
+                          });
+
+
+
+
+
+                      } else {
+                          reject(this.status);
+                      }
+                  }
+              });
+
+            promise.then(function(response){
+              let zonaVal = response;
+              xhr.open("GET", "https://maps.googleapis.com/maps/api/geocode/json?address="+addressVal+", "+zonaVal);
+              xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+              xhr.send(null);
+          
+            });
+            
+            /*if(!resolved){
+              if (localStorage.getItem('zonaIngresada')) {
+
+                var zonaVal = window.localStorage.getItem('zonaIngresada');
+                for( i = 0; i < zonas.zona.length; i++){
+
+                  if( zonas.zona[i].id == zonaVal){
+
+                    zonaVal= zonas.zona[i].nombre;
+                    xhr.open("GET", "https://maps.googleapis.com/maps/api/geocode/json?address="+addressVal+", "+zonaVal);
+
+                  }
+                }
+
+              }
+
+            }*/
+            
+
+            
+
+
+          
+            
+            
+            
+
+        };
+      
+      var locationForm = document.getElementById('location-form');
+      locationForm.addEventListener('submit', getLocation);
+
+
+
+
+    }
+</script>
+
+
+
+<script async defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB0KtoDjLlnWQY90J5d6VeBFXSpq9cHV_Y&callback=initMap">
-    </script>
+</script>
