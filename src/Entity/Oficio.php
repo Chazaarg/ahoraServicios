@@ -14,7 +14,7 @@ class Oficio
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $idOficio;
+    private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -22,13 +22,14 @@ class Oficio
     private $nombre;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Servicio", inversedBy="oficios")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $idOferente;
+    private $servicio;
 
-    public function getIdOficio(): ?int
+    public function getId(): ?int
     {
-        return $this->idOficio;
+        return $this->id;
     }
 
     public function getNombre(): ?string
@@ -43,14 +44,14 @@ class Oficio
         return $this;
     }
 
-    public function getIdOferente(): ?int
+    public function getServicio(): ?Servicio
     {
-        return $this->idOferente;
+        return $this->servicio;
     }
 
-    public function setIdOferente(int $idOferente): self
+    public function setServicio(?Servicio $servicio): self
     {
-        $this->idOferente = $idOferente;
+        $this->servicio = $servicio;
 
         return $this;
     }

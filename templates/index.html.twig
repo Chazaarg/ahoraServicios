@@ -3,26 +3,38 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel='stylesheet' href='{{ asset('build/css/global.css') }}'>
-        <link rel='stylesheet' href='{{ asset('build/css/style.css') }}'>
+        <link rel='stylesheet' href='{{ asset('build/app.css') }}'>
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
         <div class="container bg-secondary">    
            
            {{ include("_nav.html.twig") }}
-            <h1 class="text-success">{{controller_name}}</h1>
-
 
 
         {% block body %}
+
+        <div style="display:none;" class="actual-location d-flex justify-content-between">
+            <div class="col-9 d-inline">
+                <h3>Buscar servicios en <span id="direccion"></span>, <span id="zona"></span></h1>
+            </div>
+            <div class="col-3 mt-4">
+                <p>Cambiar dirección</p>
+            </div>
+        </div>
+
+        <div style="display:none;" class="map-container">
+            {{ include('_map.html.twig') }}
+        </div>
+
+
             {{include("_body.html.twig")}}
         {% endblock %}
 
         <div style="height:1000px;width:1000px;"></div>
         </div>
-        <script src='{{ asset('build/js/app.js') }}'></script>
-        <script src='{{ asset('build/js/global.js') }}'></script>
-        {% block javascripts %}{% endblock %}
+
+        <script src='{{ asset('build/app.js') }}'></script>
+    {% block javascripts %}<script src='{{ asset('build/js/location.js') }}'></script>{% endblock %}
     </body>
 </html>

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -14,7 +16,7 @@ class Servicio
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $idServicio;
+    private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -22,13 +24,18 @@ class Servicio
     private $nombre;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\OneToMany(targetEntity="App\Entity\Oficio", mappedBy="servicio")
      */
-    private $idOficio;
+    private $oficios;
 
-    public function getIdServicio()
+    public function __construct()
     {
-        return $this->idServicio;
+        $this->oficios = new ArrayCollection();
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     public function getNombre(): ?string
@@ -43,14 +50,33 @@ class Servicio
         return $this;
     }
 
-    public function getIdOficio(): ?int
+    /**
+     * @return Collection|Oficio[]
+     */
+    public function getOficios(): Collection
     {
-        return $this->idOficio;
+        return $this->oficios;
     }
 
-    public function setIdOficio(int $idOficio): self
+    public function addOficio(Oficio $oficio): self
     {
-        $this->idOficio = $idOficio;
+        if (!$this->oficios->contains($oficio)) {
+            $this->oficios[] = $oficio;
+            $oficio->setServicio($this);
+        }
+
+        return $this;
+    }
+
+    public function removeOficio(Oficio $oficio): self
+    {
+        if ($this->oficios->contains($oficio)) {
+            $this->oficios->removeElement($oficio);
+            // set the owning side to null (unless already changed)
+            if ($oficio->getServicio() === $this) {
+                $oficio->setServicio(null);
+            }
+        }
 
         return $this;
     }

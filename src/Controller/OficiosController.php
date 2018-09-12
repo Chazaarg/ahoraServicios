@@ -2,18 +2,23 @@
 
 namespace App\Controller;
 
+use App\Entity\Oficio;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class OficiosController extends Controller
+
+class OficiosController extends AbstractController
 {
     /**
-     * @Route("/servicio/zonas/oficios", name="oficios")
+     * @Route("Servicio_{servicio}/{nombre}", name="oficio_index")
      */
-    public function index()
+    public function oficios(Oficio $oficio)
     {
-        return $this->render('/servicio/zonas/oficios/index.html.twig', [
-            'controller_name' => 'OficiosController',
+
+
+        return $this->render('servicio/oficios/index.html.twig', [
+            'controller_name' => $oficio->getNombre(),
+            
         ]);
     }
 }

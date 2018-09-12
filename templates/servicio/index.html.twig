@@ -8,6 +8,13 @@
 <h1>Buscar servicios de {{controller_name}} en: </h1>
 
 
-{{ include('servicio/_map.html.twig') }}
+{% for oficio in servicio.oficios %}
+
+
+<a class="nav-link " href="{{path('oficio_index', {'servicio':servicio.id,'nombre':oficio.nombre})}}">{{ oficio.nombre }}</a>
+
+{% endfor %}
 
 {% endblock %}
+
+{% block javascripts %} {% endblock %}
